@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-server
+spec:
+  selector:
+    matchLabels:
+      app: grpc-server
+  template:
+    metadata:
+      labels:
+        app: grpc-server
+    spec:
+      containers:
+      - name: grpc-server
+        image: pigeoncai/grpc-server:1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+          - name: grpc
+            containerPort: 8080 # admin
+            protocol: TCP
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-server
+spec:
+  clusterIP: None # 这里grpc server 不直接暴露出来 headless service
+  selector:
+    app: grpc-server
+  # ports: # 因为不打算直接连接，所以不用指定端口
+  # - port: 80
+  #   targetPort: grpc # 转发selector 找到的pod上的名字为grpc的端口到service的80端口
+  #   name: grpc
+  #   protocol: TCP
+
+
